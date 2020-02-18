@@ -2,7 +2,10 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>App Pesquisa Endereço</title>
+	<meta name="description" content="Simples exemplo de consumo de API utilizando requisições Ajax e Bootstrap 4">
+  	<meta name="keywords" content="HTML,CSS,XML,JavaScript">
+  	<meta name="author" content="John Doe">	
+	<title>Pesquisa Endereço</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -26,61 +29,80 @@ function buscarCEP(cep) {
 			document.getElementById('mensagem').remove()
 		}
 
-		//Em caso de sucesso
+		//Caso a solicitação seja realizada com sucesso
 		if (ajax.status == 200 && ajax.readyState == 4) {
 
 			let json = JSON.parse(ajax.responseText)				
 
-			if(json['erro'] == true){
+			//Caso o CEP não tenha sido encontrado
+			if(json['erro'] == true){				
 
-				document.getElementById('endereco').className = 'form-control bg-danger'			
-				document.getElementById('bairro').className = 'form-control bg-danger'
-				document.getElementById('cidade').className = 'form-control bg-danger'
-				document.getElementById('uf').className = 'form-control bg-danger'
-
-				var div = document.createElement('div')
-				var p = document.createElement('p')
-
-				div.className = 'alert alert-danger alert-dismissible fade show'
-				div.id = 'mensagem'		
-				p.innerHTML = 'CEP não encontrado na base de dados!'
-
-				div.appendChild(p)
-
-				var divPrincipal = document.getElementById('corpo')
-				divPrincipal.appendChild(div)
-
+				addAlertError("CEP não encontrado na base de dados!")
+			
+			//Caso o CEP tenha sido encontrado
 			}else{
 
-				document.getElementById('endereco').value = json.logradouro
-				document.getElementById('bairro').value = json.bairro
-				document.getElementById('cidade').value = json.localidade
-				document.getElementById('uf').value = json.uf
+				addAlertSuccess(json)
 				
 			}
+		
+		//Caso o CEP tenha um formato inválido
+		} else if(ajax.status != 200 && ajax.readyState == 4){	
 
-		} else if(ajax.status != 200 && ajax.readyState == 4){		
-			
-
-			document.getElementById('endereco').className = 'form-control bg-danger'			
-			document.getElementById('bairro').className = 'form-control bg-danger'
-			document.getElementById('cidade').className = 'form-control bg-danger'
-			document.getElementById('uf').className = 'form-control bg-danger'		
-			
-
-			var div = document.createElement('div')
-			var p = document.createElement('p')
-
-			div.className = 'alert alert-danger alert-dismissible fade show'
-			div.id = 'mensagem'		
-			p.innerHTML = 'CEP com formato inválido!'
-
-			div.appendChild(p)
-
-			var divPrincipal = document.getElementById('corpo')
-			divPrincipal.appendChild(div)		
+			addAlertError("CEP com formato inválido!")	
 
 		}
+	}
+
+	function addAlertSuccess(json){
+
+		var endereco = document.getElementById('endereco')
+		endereco.className = 'form-control bg-light'
+		endereco.value = json.logradouro
+
+
+		var bairro = document.getElementById('bairro')	
+		bairro.className = 'form-control bg-light'
+		bairro.value = json.bairro
+
+		var cidade = document.getElementById('cidade')
+		cidade.className = 'form-control bg-light'
+		cidade.value = json.localidade
+
+		var uf = document.getElementById('uf')
+		uf.className = 'form-control bg-light'
+		uf.value = json.uf
+	}
+
+	function addAlertError(mensagem){
+
+		var endereco = document.getElementById('endereco')
+		endereco.className = 'form-control bg-danger'
+		endereco.value = ' '	
+
+		var bairro = document.getElementById('bairro')	
+		bairro.className = 'form-control bg-danger'
+		bairro.value = ' '
+
+		var cidade = document.getElementById('cidade')
+		cidade.className = 'form-control bg-danger'
+		cidade.value = ' '
+
+		var uf = document.getElementById('uf')
+		uf.className = 'form-control bg-danger'
+		uf.value = ' '
+
+		var div = document.createElement('div')
+		var p = document.createElement('p')
+
+		div.className = 'alert alert-danger alert-dismissible fade show'
+		div.id = 'mensagem'		
+		p.innerHTML = mensagem
+
+		div.appendChild(p)
+
+		var divPrincipal = document.getElementById('corpo')
+		divPrincipal.appendChild(div)
 	}
 
 	ajax.send()	
@@ -96,7 +118,7 @@ function buscarCEP(cep) {
 	<nav class="navbar navbar-light bg-light mb-4">
 		<div class="container">
 			<div class="navbar-brand mb-0 h1">
-				<h3>App Pesquisa Endereço</h3>
+				<h3>Pesquisar Endereço por CEP</h3>
 			</div>
 		</div>
 	</nav>
